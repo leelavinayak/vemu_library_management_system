@@ -71,7 +71,7 @@ const upload = multer({ storage: storage });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
-  
+
   const baseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
   res.json({ filePath: `/uploads/${req.file.filename}` });
 });
@@ -92,7 +92,7 @@ connectDB();
 const authMiddleware = (req, res, next) => {
   const token = req.header('x-auth-token');
   if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
-  
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
@@ -109,9 +109,6 @@ app.use('/api/auth', authRoutes);
 const asyncHandler = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
-
-// Health Check
-app.get('/health', (req, res) => res.status(200).json({ status: 'OK', timestamp: new Date() }));
 
 // Users API
 app.get('/api/users', authMiddleware, asyncHandler(async (req, res) => {
@@ -182,17 +179,17 @@ app.get('/api/transactions', authMiddleware, asyncHandler(async (req, res) => {
 
 app.post('/api/transactions', authMiddleware, asyncHandler(async (req, res) => {
   const { bookId } = req.body;
-  const existingTransaction = await Transaction.findOne({ 
-    user: req.user.id, 
-    book: bookId, 
-    status: { $in: ['active', 'ordered'] } 
+  const existingTransaction = await Transaction.findOne({
+    user: req.user.id,
+    book: bookId,
+    status: { $in: ['active', 'ordered'] }
   });
-  
+
   if (existingTransaction) {
-    return res.status(400).json({ 
-      message: existingTransaction.status === 'ordered' 
-        ? 'You have already ordered this book. Please collect it from the library.' 
-        : 'You have already issued this book and haven\'t returned it.' 
+    return res.status(400).json({
+      message: existingTransaction.status === 'ordered'
+        ? 'You have already ordered this book. Please collect it from the library.'
+        : 'You have already issued this book and haven\'t returned it.'
     });
   }
 
@@ -267,7 +264,7 @@ app.put('/api/transactions/:id/take', authMiddleware, asyncHandler(async (req, r
   transaction.status = 'active';
   transaction.type = 'issued';
   transaction.issuedDate = new Date();
-  
+
   let expectedReturnDate = new Date();
   expectedReturnDate.setDate(expectedReturnDate.getDate() + (transaction.book.loanPeriod || 14));
   transaction.expectedReturnDate = expectedReturnDate;
