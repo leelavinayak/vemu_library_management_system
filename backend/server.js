@@ -179,10 +179,18 @@ app.get('/api/transactions', authMiddleware, asyncHandler(async (req, res) => {
 
 app.post('/api/transactions', authMiddleware, asyncHandler(async (req, res) => {
   const { bookId } = req.body;
-  const existingTransaction = await Transaction.findOne({ user: req.user.id, book: bookId, status: 'active' });
+  const existingTransaction = await Transaction.findOne({ 
+    user: req.user.id, 
+    book: bookId, 
+    status: { $in: ['active', 'ordered'] } 
+  });
   
   if (existingTransaction) {
-    return res.status(400).json({ message: 'You have already issued this book and haven\'t returned it.' });
+    return res.status(400).json({ 
+      message: existingTransaction.status === 'ordered' 
+        ? 'You have already ordered this book. Please collect it from the library.' 
+        : 'You have already issued this book and haven\'t returned it.' 
+    });
   }
 
   const user = await User.findById(req.user.id);
