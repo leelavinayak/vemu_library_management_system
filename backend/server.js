@@ -321,23 +321,28 @@ app.delete('/api/notifications/all', authMiddleware, asyncHandler(async (req, re
 const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 
 if (isProd) {
-  const frontendPath = path.resolve(process.cwd(), 'frontend', 'dist');
   const fs = require('fs');
-  
-  if (fs.existsSync(frontendPath)) {
-    console.log('✅ Frontend dist folder found at:', frontendPath);
-  } else {
-    console.error('❌ Frontend dist folder NOT found at:', frontendPath);
-  }
-  
-  // Serve static files
-  app.use(express.static(frontendPath));
+  // Try multiple possible paths to find the built frontend
+  const paths = [
+    path.resolve(process.cwd(), 'frontend', 'dist'),
+    path.resolve(__dirname, '../frontend/dist'),
+    path.resolve(__dirname, '..', 'frontend', 'dist')
+  ];
 
-  // Handle React routing
-  app.use((req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(frontendPath, 'index.html'));
-  });
+  let frontendPath = paths.find(p => fs.existsSync(p));
+
+  if (frontendPath) {
+    console.log('✅ Frontend found at:', frontendPath);
+    app.use(express.static(frontendPath));
+    
+    // Catch-all for React Routing
+    app.use((req, res, next) => {
+      if (req.path.startsWith('/api')) return next();
+      res.sendFile(path.join(frontendPath, 'index.html'));
+    });
+  } else {
+    console.error('❌ CRITICAL: Frontend dist folder NOT found in any location:', paths);
+  }
 }
 
 // --- GLOBAL ERROR HANDLER ---
