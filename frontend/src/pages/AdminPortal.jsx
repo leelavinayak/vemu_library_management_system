@@ -175,7 +175,15 @@ const AdminHistory = () => {
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>
                   <td>{t.issuedDate ? new Date(t.issuedDate).toLocaleDateString() : <span style={{ color: 'var(--text-muted)' }}>Pending</span>}</td>
-                  <td><span className={`status-badge ${t.status === 'active' ? (isOverdue ? 'status-overdue' : 'status-active') : 'status-completed'}`}>{t.status === 'active' ? (isOverdue ? 'Overdue' : 'Active') : 'Returned'}</span></td>
+                  <td>
+                    <span className={`status-badge ${
+                      t.status === 'active' ? (isOverdue ? 'status-overdue' : 'status-active') : 
+                      t.status === 'ordered' ? 'status-active' : 'status-completed'
+                    }`}>
+                      {t.status === 'active' ? (isOverdue ? 'Overdue' : 'Active') : 
+                       t.status === 'ordered' ? 'Ordered' : 'Returned'}
+                    </span>
+                  </td>
                 </tr>
               );
             })}
