@@ -18,6 +18,9 @@ const Notification = require('./models/Notification');
 
 const app = express();
 
+// Trust proxy for Render/proxies (required for rate limiting)
+app.set('trust proxy', 1);
+
 // --- PRODUCTION MIDDLEWARE ---
 const allowedOrigins = [
   'http://localhost:5173',
@@ -302,7 +305,8 @@ app.delete('/api/notifications/all', authMiddleware, asyncHandler(async (req, re
 const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 
 if (isProd) {
-  const frontendPath = path.join(process.cwd(), 'frontend', 'dist');
+  const frontendPath = path.resolve(process.cwd(), 'frontend', 'dist');
+  console.log('Serving frontend from:', frontendPath);
   
   // Serve static files
   app.use(express.static(frontendPath));

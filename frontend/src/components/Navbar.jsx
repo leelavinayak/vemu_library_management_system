@@ -37,7 +37,7 @@ const Navbar = ({ role, links }) => {
         {/* Left: Logo */}
         <Link to={user ? `/${user.role?.toLowerCase()}` : '/'} className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
           <img src="/vemu_logo_1.png" alt="VEMU" style={{ height: '32px', width: 'auto', borderRadius: '4px' }} />
-          <span style={{ fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-0.02em', display: 'inline-block' }}>VEMU</span>
+          <span style={{ fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-0.02em', display: 'inline-block' }}>VEMU LIBRARY</span>
         </Link>
 
         {/* Center: Desktop Nav (Hidden on Mobile) */}
