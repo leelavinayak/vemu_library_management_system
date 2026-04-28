@@ -31,13 +31,13 @@ const Navbar = ({ role, links }) => {
   const profilePath = `/${user?.role?.toLowerCase()}/profile`;
 
   return (
-    <nav className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+    <nav className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000, background: '#000000', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
       <div className="navbar-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 1rem' }}>
 
         {/* Left: Logo */}
-        <Link to={user ? `/${user.role?.toLowerCase()}` : '/'} className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+        <Link to={user ? `/${user.role?.toLowerCase()}` : '/'} className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, color: '#ffffff' }}>
           <img src="/vemu_logo_1.png" alt="VEMU" style={{ height: '32px', width: 'auto', borderRadius: '4px' }} />
-          <span style={{ fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-0.02em', display: 'inline-block' }}>VEMU LIBRARY</span>
+          <span style={{ fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-0.02em', display: 'inline-block', color: '#ffffff' }}>VEMU LIBRARY</span>
         </Link>
 
         {/* Center: Desktop Nav (Hidden on Mobile) */}

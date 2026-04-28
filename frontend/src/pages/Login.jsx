@@ -18,7 +18,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) navigate(`/${user.role}`);
+    if (user && user.role) navigate(`/${user.role.toLowerCase()}`);
   }, [user, navigate]);
 
   const handleSubmit = async (e) => {
@@ -29,7 +29,8 @@ const Login = () => {
       if (step === 'login') {
         const u = await login(email, password);
         toast.success(`Welcome back, ${u.name}!`);
-        navigate(`/${u.role}`);
+        const role = u.role ? u.role.toLowerCase() : 'student';
+        navigate(`/${role}`);
       } else if (step === 'forgot') {
         const res = await api.post('/api/auth/forgot-password', { email });
         toast.success(res.data.message);

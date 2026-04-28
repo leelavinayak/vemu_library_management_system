@@ -42,8 +42,17 @@ app.use(cors({
 }));
 
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-})); // Security headers
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "blob:", "https://*"],
+      connectSrc: ["'self'", "https://*", "http://*"],
+    },
+  },
+})); // Security headers with Image support
 app.use(compression()); // Compress responses
 
 // Logging
