@@ -308,7 +308,7 @@ if (isProd) {
   app.use(express.static(frontendPath));
 
   // Handle React routing
-  app.get('*', (req, res, next) => {
+  app.use((req, res, next) => {
     if (req.path.startsWith('/api')) return next();
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
