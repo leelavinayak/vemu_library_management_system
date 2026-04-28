@@ -90,11 +90,15 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 // --- DATABASE CONNECTION ---
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('MongoDB Connected');
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    console.log('✅ MongoDB Connected Successfully');
   } catch (err) {
-    console.error('MongoDB Connection Error:', err.message);
-    process.exit(1);
+    console.error('❌ MongoDB Connection Error:', err.message);
+    // In production, we might want to retry rather than exit
+    setTimeout(connectDB, 5000);
   }
 };
 connectDB();
@@ -297,22 +301,7 @@ app.put('/api/notifications/:id/read', authMiddleware, asyncHandler(async (req, 
   res.json(notif);
 }));
 
-// Debug Files API
-app.get('/api/debug-files', (req, res) => {
-  const fs = require('fs');
-  const frontendPath = path.resolve(process.cwd(), 'frontend', 'dist');
-  try {
-    if (fs.existsSync(frontendPath)) {
-      const files = fs.readdirSync(frontendPath);
-      res.json({ exists: true, path: frontendPath, files });
-    } else {
-      res.json({ exists: false, path: frontendPath, message: 'Dist folder missing' });
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
+// --- NOTIFICATIONS CLEANUP ---
 app.delete('/api/notifications/all', authMiddleware, asyncHandler(async (req, res) => {
   await Notification.deleteMany({ user: req.user.id });
   res.json({ message: 'All notifications cleared' });
