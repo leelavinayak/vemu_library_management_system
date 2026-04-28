@@ -298,18 +298,19 @@ app.delete('/api/notifications/all', authMiddleware, asyncHandler(async (req, re
   res.json({ message: 'All notifications cleared' });
 }));
 
-// --- SERVE FRONTEND IN PRODUCTION ---
-if (process.env.NODE_ENV === 'production') {
-  // Serve static files from the frontend/dist directory
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// --- SERVE FRONTEND ---
+const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 
-  // Handle React routing, return index.html for all non-API requests
-  app.use((req, res, next) => {
-    // If the request is for an API route that wasn't found, pass it to the error handler
-    if (req.path.startsWith('/api')) {
-      return next();
-    }
-    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+if (isProd) {
+  const frontendPath = path.join(process.cwd(), 'frontend', 'dist');
+  
+  // Serve static files
+  app.use(express.static(frontendPath));
+
+  // Handle React routing
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
 
