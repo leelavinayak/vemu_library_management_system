@@ -298,6 +298,17 @@ app.delete('/api/notifications/all', authMiddleware, asyncHandler(async (req, re
   res.json({ message: 'All notifications cleared' });
 }));
 
+// --- SERVE FRONTEND IN PRODUCTION ---
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the frontend/dist directory
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+  });
+}
+
 // --- GLOBAL ERROR HANDLER ---
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -310,8 +321,8 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'test') {
   connectDB().then(() => {
-    app.listen(PORT, () => console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`));
+    app.listen(PORT, () => console.log(`Server running in ${process.env.NODE_ENV || 'production'} mode on port ${PORT}`));
   });
 }
 
-module.exports = app; // Export for Vercel
+module.exports = app; 
