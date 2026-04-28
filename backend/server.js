@@ -306,7 +306,13 @@ const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER === '
 
 if (isProd) {
   const frontendPath = path.resolve(process.cwd(), 'frontend', 'dist');
-  console.log('Serving frontend from:', frontendPath);
+  const fs = require('fs');
+  
+  if (fs.existsSync(frontendPath)) {
+    console.log('✅ Frontend dist folder found at:', frontendPath);
+  } else {
+    console.error('❌ Frontend dist folder NOT found at:', frontendPath);
+  }
   
   // Serve static files
   app.use(express.static(frontendPath));
