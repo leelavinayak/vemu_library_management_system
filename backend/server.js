@@ -19,7 +19,9 @@ const Notification = require('./models/Notification');
 const app = express();
 
 // --- PRODUCTION MIDDLEWARE ---
-app.use(helmet()); // Security headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+})); // Security headers
 app.use(compression()); // Compress responses
 
 // Logging

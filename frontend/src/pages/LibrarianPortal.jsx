@@ -409,7 +409,7 @@ const LibrarianBooks = () => {
               {book.imageUrl && book.imageUrl.endsWith('.pdf') ? (
                 <div className="pdf-placeholder">
                   <BookOpen size={48} color="var(--primary)" style={{ opacity: 0.35 }} />
-                  <a href={book.imageUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
+                  <a href={getBookImage(book.imageUrl)} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
                 </div>
               ) : (
                 <img src={getBookImage(book.imageUrl)} alt={book.title} />
