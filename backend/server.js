@@ -296,6 +296,22 @@ app.put('/api/notifications/:id/read', authMiddleware, asyncHandler(async (req, 
   res.json(notif);
 }));
 
+// Debug Files API
+app.get('/api/debug-files', (req, res) => {
+  const fs = require('fs');
+  const frontendPath = path.resolve(process.cwd(), 'frontend', 'dist');
+  try {
+    if (fs.existsSync(frontendPath)) {
+      const files = fs.readdirSync(frontendPath);
+      res.json({ exists: true, path: frontendPath, files });
+    } else {
+      res.json({ exists: false, path: frontendPath, message: 'Dist folder missing' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.delete('/api/notifications/all', authMiddleware, asyncHandler(async (req, res) => {
   await Notification.deleteMany({ user: req.user.id });
   res.json({ message: 'All notifications cleared' });
