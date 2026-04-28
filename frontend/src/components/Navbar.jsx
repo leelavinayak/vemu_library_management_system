@@ -31,7 +31,7 @@ const Navbar = ({ role, links }) => {
   const profilePath = `/${user?.role?.toLowerCase()}/profile`;
 
   return (
-    <nav className="navbar" style={{ position: 'relative' }}>
+    <nav className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
       <div className="navbar-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 1rem' }}>
 
         {/* Left: Logo */}
