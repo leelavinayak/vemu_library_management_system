@@ -25,7 +25,8 @@ app.set('trust proxy', 1);
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://vemu-library-management-system.onrender.com', 
+  'https://vemu-library-management-system-ni7c.onrender.com',
+  'https://vemu-library-management-system.onrender.com',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
