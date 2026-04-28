@@ -72,7 +72,7 @@ const upload = multer({ storage: storage });
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
 
-  const baseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
+  const baseUrl = process.env.BACKEND_URL || 'https://vemu-library-management-system-ni7c.onrender.com';
   res.json({ filePath: `/uploads/${req.file.filename}` });
 });
 
