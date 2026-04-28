@@ -178,19 +178,30 @@ app.delete('/api/users/:id', authMiddleware, asyncHandler(async (req, res) => {
 }));
 
 // Books API
+const stripDomain = (url) => {
+  if (!url) return url;
+  if (typeof url !== 'string') return url;
+  if (url.includes('/uploads/')) {
+    return '/uploads/' + url.split('/uploads/')[1];
+  }
+  return url;
+};
+
 app.get('/api/books', asyncHandler(async (req, res) => {
   const books = await Book.find();
   res.json(books);
 }));
 
 app.post('/api/books', authMiddleware, asyncHandler(async (req, res) => {
-  const newBook = new Book(req.body);
+  const bookData = { ...req.body, imageUrl: stripDomain(req.body.imageUrl) };
+  const newBook = new Book(bookData);
   const book = await newBook.save();
   res.json(book);
 }));
 
 app.put('/api/books/:id', authMiddleware, asyncHandler(async (req, res) => {
-  const book = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const bookData = { ...req.body, imageUrl: stripDomain(req.body.imageUrl) };
+  const book = await Book.findByIdAndUpdate(req.params.id, bookData, { new: true });
   res.json(book);
 }));
 
