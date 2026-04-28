@@ -19,6 +19,24 @@ const Notification = require('./models/Notification');
 const app = express();
 
 // --- PRODUCTION MIDDLEWARE ---
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://vemu-library-management-system.onrender.com', 
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 })); // Security headers
