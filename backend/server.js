@@ -303,8 +303,12 @@ if (process.env.NODE_ENV === 'production') {
   // Serve static files from the frontend/dist directory
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
-  // Handle React routing, return all requests to React app
-  app.get('(.*)', (req, res) => {
+  // Handle React routing, return index.html for all non-API requests
+  app.use((req, res, next) => {
+    // If the request is for an API route that wasn't found, pass it to the error handler
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
     res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
   });
 }
