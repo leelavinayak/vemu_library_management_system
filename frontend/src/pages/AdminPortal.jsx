@@ -11,6 +11,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import AddUser from './AddUser';
 import EditUser from './EditUser';
 
+const getBookImage = (img) => {
+  if (!img) return 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
+  if (img.startsWith('http')) return img;
+  const cleanBase = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  const cleanImg = img.startsWith('/') ? img : `/${img}`;
+  return `${cleanBase}${cleanImg}`;
+};
+
 const AdminPortal = () => {
   const links = [
     { path: '/admin', label: 'Dashboard' },
@@ -160,7 +168,7 @@ const AdminHistory = () => {
 
       <div className="table-container">
         <table>
-          <thead><tr><th>User Details</th><th>Institution & Academic Info</th><th>Book</th><th>Issued</th><th>Returned</th><th>Status</th></tr></thead>
+          <thead><tr><th>User Details</th><th>Institution & Academic Info</th><th>Book Preview</th><th>Book</th><th>Issued</th><th>Returned</th><th>Status</th></tr></thead>
           <tbody>
             {displayed.map(t => {
               const isOverdue = t.status === 'active' && new Date() > new Date(t.expectedReturnDate);
@@ -176,6 +184,11 @@ const AdminHistory = () => {
                       {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
                     </div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700 }}>ID: {t.user?.collegeId || '—'}</div>
+                  </td>
+                  <td>
+                    <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>
                   <td>{t.issuedDate ? new Date(t.issuedDate).toLocaleDateString() : <span style={{ color: 'var(--text-muted)' }}>Pending</span>}</td>
@@ -492,6 +505,7 @@ const AdminBorrowings = () => {
             <thead>
               <tr>
                 <th>User Details</th>
+                <th>Preview</th>
                 <th>Book Details</th>
                 <th>Date / Deadline</th>
                 <th>Status</th>
@@ -507,6 +521,11 @@ const AdminBorrowings = () => {
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t.user?.collegeName || '—'}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                       {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
+                    </div>
+                  </td>
+                  <td>
+                    <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>

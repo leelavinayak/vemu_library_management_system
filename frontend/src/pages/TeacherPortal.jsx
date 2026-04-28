@@ -9,6 +9,14 @@ import { BookOpen, Bell, Clock, Edit2, Save, X, Search } from 'lucide-react';
 
 const DEFAULT_BOOK_IMAGE = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
 
+const getBookImage = (img) => {
+  if (!img) return 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
+  if (img.startsWith('http')) return img;
+  const cleanBase = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  const cleanImg = img.startsWith('/') ? img : `/${img}`;
+  return `${cleanBase}${cleanImg}`;
+};
+
 const TeacherPortal = () => {
   const links = [
     { path: '/teacher', label: 'Home' },
@@ -57,12 +65,6 @@ const TeacherHome = () => {
       await api.post('/api/notifications/request', { bookId });
       toast.success('You will be notified when this book is available!');
     } catch (err) { toast.error('Error requesting notification'); }
-  };
-
-  const getBookImage = (img) => {
-    if (!img) return DEFAULT_BOOK_IMAGE;
-    if (img.startsWith('http')) return img;
-    return `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`;
   };
 
   const filtered = books.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -182,13 +184,18 @@ const TeacherHistory = () => {
       ) : (
         <div className="table-container">
           <table>
-            <thead><tr><th>Book</th><th>College</th><th>Issued Date</th><th>Expected Return</th><th>Actual Return</th><th>Status</th></tr></thead>
+            <thead><tr><th>Book</th><th>Preview</th><th>College</th><th>Issued Date</th><th>Expected Return</th><th>Actual Return</th><th>Status</th></tr></thead>
             <tbody>
               {displayed.map(t => {
                 const isOverdue = t.status === 'active' && new Date() > new Date(t.expectedReturnDate);
                 return (
                   <tr key={t._id}>
                     <td><strong>{t.book?.title}</strong></td>
+                    <td>
+                      <div style={{ width: '45px', height: '60px', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                        <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    </td>
                     <td style={{ fontSize: '0.85rem' }}>{t.user?.collegeName || '—'}</td>
                     <td>{new Date(t.issuedDate).toLocaleDateString()}</td>
                     <td style={{ color: isOverdue ? 'var(--danger)' : 'inherit' }}>{new Date(t.expectedReturnDate).toLocaleDateString()}</td>

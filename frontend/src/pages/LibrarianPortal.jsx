@@ -8,6 +8,14 @@ import { Notifications } from './StudentPortal';
 import toast from 'react-hot-toast';
 import { BookOpen, Edit2, Trash2, Plus, Save, X, CheckCircle, Clock, AlertTriangle, Search } from 'lucide-react';
 
+const getBookImage = (img) => {
+  if (!img) return 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
+  if (img.startsWith('http')) return img;
+  const cleanBase = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  const cleanImg = img.startsWith('/') ? img : `/${img}`;
+  return `${cleanBase}${cleanImg}`;
+};
+
 const LibrarianPortal = () => {
   const links = [
     { path: '/librarian', label: 'Dashboard' },
@@ -140,6 +148,7 @@ const LibrarianHome = () => {
             <thead>
               <tr>
                 <th>User Details</th>
+                <th>Book Preview</th>
                 <th>Book Details</th>
                 <th>Order Date</th>
                 <th>Action</th>
@@ -156,6 +165,11 @@ const LibrarianHome = () => {
                     </div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                       {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
+                    </div>
+                  </td>
+                  <td>
+                    <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   </td>
                   <td><strong>{t.book?.title}</strong></td>
@@ -194,6 +208,7 @@ const LibrarianHome = () => {
             <thead>
               <tr>
                 <th>User Details</th>
+                <th>Book Preview</th>
                 <th>Book Details</th>
                 <th>Issued Date</th>
                 <th>Return Deadline</th>
@@ -213,6 +228,11 @@ const LibrarianHome = () => {
                       </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                        <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                     </td>
                     <td><strong>{t.book?.title}</strong></td>
@@ -319,12 +339,6 @@ const LibrarianBooks = () => {
   };
 
   const filtered = books.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  const getBookImage = (img) => {
-    if (!img) return DEFAULT_BOOK_IMAGE;
-    if (img.startsWith('http')) return img;
-    return `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`;
-  };
 
   return (
     <div>
@@ -508,7 +522,7 @@ const LibrarianHistory = () => {
 
       <div className="table-container">
         <table>
-          <thead><tr><th>User Details</th><th>Institution & Academic Info</th><th>Book</th><th>Issued</th><th>Returned</th><th>Status</th></tr></thead>
+          <thead><tr><th>User Details</th><th>Institution & Academic Info</th><th>Book Preview</th><th>Book</th><th>Issued</th><th>Returned</th><th>Status</th></tr></thead>
           <tbody>
             {displayed.map(t => {
               const isOverdue = t.status === 'active' && new Date() > new Date(t.expectedReturnDate);
@@ -524,6 +538,11 @@ const LibrarianHistory = () => {
                       {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700 }}>ID: {t.user?.collegeId || '—'}</div>
+                  </td>
+                  <td>
+                    <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>
                   <td>{t.issuedDate ? new Date(t.issuedDate).toLocaleDateString() : <span style={{ color: 'var(--text-muted)' }}>Pending</span>}</td>
@@ -626,6 +645,7 @@ const LibrarianBorrowings = () => {
             <thead>
               <tr>
                 <th>User Details</th>
+                <th>Preview</th>
                 <th>Book Details</th>
                 <th>Date / Deadline</th>
                 <th>Status</th>
@@ -641,6 +661,11 @@ const LibrarianBorrowings = () => {
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t.user?.collegeName || '—'}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                       {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
+                    </div>
+                  </td>
+                  <td>
+                    <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>

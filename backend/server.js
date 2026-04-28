@@ -74,17 +74,14 @@ app.use('/api/', limiter);
 // Body Parser
 app.use(express.json({ limit: '10mb' })); 
 // Serve uploads from multiple potential locations for robustness
-const uploadDirs = [
-  '/tmp',
-  path.join(process.cwd(), 'backend', 'uploads'),
-  path.join(__dirname, 'uploads')
-];
+// Static File Serving for Uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use('/uploads', express.static(path.join(process.cwd(), 'backend', 'uploads')));
 
-uploadDirs.forEach(dir => {
-  if (require('fs').existsSync(dir)) {
-    app.use('/uploads', express.static(dir));
-  }
-});
+if (process.env.NODE_ENV === 'production') {
+  app.use('/uploads', express.static('/tmp'));
+}
 
 // --- MULTER CONFIGURATION ---
 // Note: Local storage will not work on Vercel's ephemeral filesystem.
