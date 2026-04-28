@@ -110,6 +110,9 @@ const asyncHandler = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
+// Health Check
+app.get('/health', (req, res) => res.status(200).json({ status: 'OK', timestamp: new Date() }));
+
 // Users API
 app.get('/api/users', authMiddleware, asyncHandler(async (req, res) => {
   const users = await User.find().select('-password');
