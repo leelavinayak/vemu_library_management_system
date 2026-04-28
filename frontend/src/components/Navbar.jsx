@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Bell, Menu, X, LogOut, User } from 'lucide-react';
-import axios from 'axios';
+import api from '../api/axios';
 
 const Navbar = ({ role, links }) => {
   const { user, logout } = useContext(AuthContext);
@@ -14,7 +14,7 @@ const Navbar = ({ role, links }) => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/notifications');
+        const res = await api.get('/api/notifications');
         setUnreadCount(res.data.filter(n => !n.read).length);
       } catch (err) { }
     };

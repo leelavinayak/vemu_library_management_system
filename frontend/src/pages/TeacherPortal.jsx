@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import axios from 'axios';
+import api, { BASE_URL } from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 import { Notifications } from './StudentPortal';
 import toast from 'react-hot-toast';
@@ -36,16 +36,16 @@ const TeacherHome = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/books')
+    api.get('/api/books')
       .then(res => { setBooks(res.data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
   const handleBook = async (bookId) => {
     try {
-      await axios.post('http://localhost:5000/api/transactions', { bookId });
+      await api.post('/api/transactions', { bookId });
       toast.success('Book issued successfully!');
-      const res = await axios.get('http://localhost:5000/api/books');
+      const res = await api.get('/api/books');
       setBooks(res.data);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error booking book');
@@ -54,9 +54,15 @@ const TeacherHome = () => {
 
   const handleNotify = async (bookId) => {
     try {
-      await axios.post('http://localhost:5000/api/notifications/request', { bookId });
+      await api.post('/api/notifications/request', { bookId });
       toast.success('You will be notified when this book is available!');
     } catch (err) { toast.error('Error requesting notification'); }
+  };
+
+  const getBookImage = (img) => {
+    if (!img) return DEFAULT_BOOK_IMAGE;
+    if (img.startsWith('http')) return img;
+    return `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`;
   };
 
   const filtered = books.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -90,7 +96,7 @@ const TeacherHome = () => {
                 {book.imageUrl && book.imageUrl.endsWith('.pdf') ? (
                   <div style={{ height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--gradient-subtle)' }}>
                     <BookOpen size={48} color="var(--primary)" style={{ opacity: 0.4 }} />
-                    <a href={book.imageUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
+                    <a href={getBookImage(book.imageUrl)} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
                   </div>
                 ) : (
                   <img src={getBookImage(book.imageUrl)} alt={book.title} />
@@ -133,7 +139,7 @@ const TeacherHistory = () => {
   const [limit, setLimit] = useState(10);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/transactions').then(res => setHistory(res.data));
+    api.get('/api/transactions').then(res => setHistory(res.data));
   }, []);
 
   const filtered = history.filter(t =>
@@ -209,7 +215,7 @@ const TeacherProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/users/${user.id || user._id}`, formData);
+      await api.put(`/api/users/${user.id || user._id}`, formData);
       setUser({ ...user, ...formData });
       toast.success('Profile updated successfully!');
       setIsEditing(false);

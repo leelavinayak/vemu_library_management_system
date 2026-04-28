@@ -61,13 +61,13 @@ const StudentHome = () => {
     } catch (err) { toast.error('Error requesting notification'); }
   };
 
-  const filtered = books.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
-
   const getBookImage = (img) => {
     if (!img) return DEFAULT_BOOK_IMAGE;
     if (img.startsWith('http')) return img;
     return `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`;
   };
+
+  const filtered = books.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div>
@@ -101,7 +101,7 @@ const StudentHome = () => {
                 {book.imageUrl && book.imageUrl.endsWith('.pdf') ? (
                   <div className="pdf-placeholder">
                     <BookOpen size={48} color="var(--primary)" style={{ opacity: 0.4 }} />
-                    <a href={book.imageUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
+                    <a href={getBookImage(book.imageUrl)} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
                   </div>
                 ) : (
                   <img src={getBookImage(book.imageUrl)} alt={book.title} />
@@ -416,13 +416,13 @@ export const Notifications = () => {
   const [modalConfig, setModalConfig] = useState({ isOpen: false, type: 'single', id: null });
 
   const fetchNotifs = async () => {
-    const res = await axios.get('http://localhost:5000/api/notifications');
+    const res = await api.get('/api/notifications');
     setNotifications(res.data);
   };
   useEffect(() => { fetchNotifs(); }, []);
 
   const markRead = async (id) => {
-    await axios.put(`http://localhost:5000/api/notifications/${id}/read`);
+    await api.put(`/api/notifications/${id}/read`);
     fetchNotifs();
   };
 

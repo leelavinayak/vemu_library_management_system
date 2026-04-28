@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ConfirmModal from '../components/ConfirmModal';
-import axios from 'axios';
+import api, { BASE_URL } from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 import { Notifications } from './StudentPortal';
 import toast from 'react-hot-toast';
@@ -46,8 +46,8 @@ const LibrarianHome = () => {
   const fetchData = async () => {
     try {
       const [bRes, tRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/books'),
-        axios.get('http://localhost:5000/api/transactions'),
+        api.get('/api/books'),
+        api.get('/api/transactions'),
       ]);
       const txs = tRes.data;
       const now = new Date();
@@ -71,7 +71,7 @@ const LibrarianHome = () => {
   const handleAction = async (id, action) => {
     try {
       setProcessingId(id);
-      await axios.put(`http://localhost:5000/api/transactions/${id}/${action}`);
+      await api.put(`/api/transactions/${id}/${action}`);
       toast.success(`Book marked as ${action === 'take' ? 'Taken' : 'Returned'}`);
       await fetchData();
     } catch (err) {
@@ -258,7 +258,7 @@ const LibrarianBooks = () => {
 
   useEffect(() => { fetchBooks(); }, []);
   const fetchBooks = async () => {
-    const res = await axios.get('http://localhost:5000/api/books');
+    const res = await api.get('/api/books');
     setBooks(res.data);
   };
 
@@ -269,7 +269,7 @@ const LibrarianBooks = () => {
     data.append('file', file);
     try {
       setUploading(true);
-      const res = await axios.post('http://localhost:5000/api/upload', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const res = await api.post('/api/upload', data, { headers: { 'Content-Type': 'multipart/form-data' } });
       setFormData(f => ({ ...f, imageUrl: res.data.filePath }));
       toast.success('File uploaded!');
     } catch (err) { toast.error('Upload failed'); }
@@ -285,10 +285,10 @@ const LibrarianBooks = () => {
         submitData.imageUrl = DEFAULT_BOOK_IMAGE;
       }
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/books/${editingId}`, submitData);
+        await api.put(`/api/books/${editingId}`, submitData);
         toast.success('Book updated!');
       } else {
-        await axios.post('http://localhost:5000/api/books', submitData);
+        await api.post('/api/books', submitData);
         toast.success('Book added!');
       }
       setFormData(emptyForm); setEditingId(null); setShowForm(false); fetchBooks();
@@ -306,7 +306,7 @@ const LibrarianBooks = () => {
 
   const executeDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/books/${modalConfig.id}`);
+      await api.delete(`/api/books/${modalConfig.id}`);
       toast.success('Book deleted');
       fetchBooks();
     } catch (err) { toast.error('Error deleting book'); }
@@ -317,7 +317,7 @@ const LibrarianBooks = () => {
   const getBookImage = (img) => {
     if (!img) return DEFAULT_BOOK_IMAGE;
     if (img.startsWith('http')) return img;
-    return `http://localhost:5000${img.startsWith('/') ? '' : '/'}${img}`;
+    return `${BASE_URL}${img.startsWith('/') ? '' : '/'}${img}`;
   };
 
   return (
@@ -454,13 +454,13 @@ const LibrarianHistory = () => {
 
   useEffect(() => { fetchHistory(); }, []);
   const fetchHistory = async () => {
-    const res = await axios.get('http://localhost:5000/api/transactions');
+    const res = await api.get('/api/transactions');
     setHistory(res.data);
   };
 
   const handleReturn = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/transactions/${id}/return`);
+      await api.put(`/api/transactions/${id}/return`);
       toast.success('Book marked as returned!');
       fetchHistory();
     } catch (err) { toast.error('Error returning book'); }
@@ -544,7 +544,7 @@ const LibrarianBorrowings = () => {
 
   const fetchBorrowings = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/transactions');
+      const res = await api.get('/api/transactions');
       setBorrowings(res.data.filter(t => t.status !== 'completed'));
       setLoading(false);
     } catch (err) {
@@ -558,7 +558,7 @@ const LibrarianBorrowings = () => {
   const handleAction = async (id, action) => {
     try {
       setProcessingId(id);
-      await axios.put(`http://localhost:5000/api/transactions/${id}/${action}`);
+      await api.put(`/api/transactions/${id}/${action}`);
       toast.success(`Book marked as ${action === 'take' ? 'Taken' : 'Returned'}`);
       await fetchBorrowings();
     } catch (err) {
@@ -678,7 +678,7 @@ const LibrarianFines = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/transactions').then(res => setFines(res.data.filter(t => t.fineAmount > 0)));
+    api.get('/api/transactions').then(res => setFines(res.data.filter(t => t.fineAmount > 0)));
   }, []);
 
   const filtered = fines.filter(t =>
@@ -732,7 +732,7 @@ const LibrarianProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/users/${user.id || user._id}`, formData);
+      await api.put(`/api/users/${user.id || user._id}`, formData);
       setUser({ ...user, ...formData });
       toast.success('Profile updated!');
       setIsEditing(false);

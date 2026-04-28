@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ConfirmModal from '../components/ConfirmModal';
-import axios from 'axios';
+import api from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 import { Notifications } from './StudentPortal';
 import toast from 'react-hot-toast';
@@ -47,8 +47,8 @@ const AdminHome = () => {
 
   useEffect(() => {
     Promise.all([
-      axios.get('http://localhost:5000/api/users'),
-      axios.get('http://localhost:5000/api/transactions'),
+      api.get('/api/users'),
+      api.get('/api/transactions'),
     ]).then(([uRes]) => {
       const users = uRes.data;
       const fined = users.filter(u => u.role === 'student' && u.fineAmount > 0);
@@ -121,7 +121,7 @@ const AdminHistory = () => {
   const [limit, setLimit] = useState(10);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/transactions').then(res => setHistory(res.data));
+    api.get('/api/transactions').then(res => setHistory(res.data));
   }, []);
 
   const filtered = history.filter(t =>
@@ -191,7 +191,7 @@ const AdminFines = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/transactions').then(res => setFines(res.data.filter(t => t.fineAmount > 0)));
+    api.get('/api/transactions').then(res => setFines(res.data.filter(t => t.fineAmount > 0)));
   }, []);
 
   const filtered = fines.filter(t =>
@@ -243,7 +243,7 @@ const AdminUsers = () => {
 
   useEffect(() => { fetchUsers(); }, []);
   const fetchUsers = async () => {
-    const res = await axios.get('http://localhost:5000/api/users');
+    const res = await api.get('/api/users');
     setUsers(res.data.filter(u => u.role !== 'admin'));
   };
 
@@ -253,7 +253,7 @@ const AdminUsers = () => {
 
   const executeDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/users/${modalConfig.id}`);
+      await api.delete(`/api/users/${modalConfig.id}`);
       toast.success('User deleted'); 
       fetchUsers();
     } catch (err) { toast.error('Error deleting user'); }
@@ -326,7 +326,7 @@ const AdminProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/users/${user.id || user._id}`, formData);
+      await api.put(`/api/users/${user.id || user._id}`, formData);
       setUser({ ...user, ...formData });
       toast.success('Profile updated!');
       setIsEditing(false);
@@ -419,7 +419,7 @@ const AdminBorrowings = () => {
 
   const fetchBorrowings = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/transactions');
+      const res = await api.get('/api/transactions');
       setBorrowings(res.data.filter(t => t.status !== 'completed'));
       setLoading(false);
     } catch (err) {
@@ -432,7 +432,7 @@ const AdminBorrowings = () => {
 
   const handleAction = async (id, action) => {
     try {
-      await axios.put(`http://localhost:5000/api/transactions/${id}/${action}`);
+      await api.put(`/api/transactions/${id}/${action}`);
       toast.success(`Book marked as ${action === 'take' ? 'Taken' : 'Returned'}`);
       fetchBorrowings();
     } catch (err) {

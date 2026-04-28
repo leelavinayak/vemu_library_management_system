@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { Save, X, ArrowLeft } from 'lucide-react';
 
@@ -23,7 +23,7 @@ const AddUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
+      await api.post('/api/auth/register', formData);
       toast.success('User created successfully!');
       navigate('/admin/users');
     } catch (err) {

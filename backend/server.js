@@ -51,7 +51,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '10kb' })); // Body parser with limit
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(process.env.NODE_ENV === 'production' ? '/tmp' : path.join(__dirname, 'uploads')));
 
 // --- MULTER CONFIGURATION ---
 // Note: Local storage will not work on Vercel's ephemeral filesystem.
@@ -71,7 +71,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
   
   const baseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
-  res.json({ filePath: `${baseUrl}/uploads/${req.file.filename}` });
+  res.json({ filePath: `/uploads/${req.file.filename}` });
 });
 
 // --- DATABASE CONNECTION ---

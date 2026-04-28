@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { Save, X, ArrowLeft, Loader2 } from 'lucide-react';
 
@@ -24,8 +24,7 @@ const EditUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:5000/api/users/${id}`);
+        const res = await api.get(`/api/users/${id}`);
         const u = res.data;
         setFormData({
           name: u.name || '',
@@ -51,12 +50,11 @@ const EditUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
       // Only include password if it's not empty
       const dataToSubmit = { ...formData };
       if (!dataToSubmit.password) delete dataToSubmit.password;
 
-      await axios.put(`http://localhost:5000/api/users/${id}`, dataToSubmit);
+      await api.put(`/api/users/${id}`, dataToSubmit);
       toast.success('User updated successfully!');
       navigate('/admin/users');
     } catch (err) {
