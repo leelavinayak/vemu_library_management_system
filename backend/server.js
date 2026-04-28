@@ -48,7 +48,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "blob:", "https://*"],
+      imgSrc: ["'self'", "data:", "blob:", "https://*", "http://*"],
       connectSrc: ["'self'", "https://*", "http://*"],
     },
   },
@@ -73,7 +73,18 @@ app.use('/api/', limiter);
 // CORS Configuration
 // Body Parser
 app.use(express.json({ limit: '10mb' })); 
-app.use('/uploads', express.static(process.env.NODE_ENV === 'production' ? '/tmp' : path.join(__dirname, 'uploads')));
+// Serve uploads from multiple potential locations for robustness
+const uploadDirs = [
+  '/tmp',
+  path.join(process.cwd(), 'backend', 'uploads'),
+  path.join(__dirname, 'uploads')
+];
+
+uploadDirs.forEach(dir => {
+  if (require('fs').existsSync(dir)) {
+    app.use('/uploads', express.static(dir));
+  }
+});
 
 // --- MULTER CONFIGURATION ---
 // Note: Local storage will not work on Vercel's ephemeral filesystem.
@@ -197,7 +208,7 @@ app.get('/api/transactions', authMiddleware, asyncHandler(async (req, res) => {
   if (req.user.role === 'student' || req.user.role === 'teacher') {
     query.user = req.user.id;
   }
-  const transactions = await Transaction.find(query).populate('book', 'title imageUrl').populate('user', 'name role');
+  const transactions = await Transaction.find(query).populate('book', 'title imageUrl').populate('user', 'name role collegeName collegeId year branch section');
   res.json(transactions);
 }));
 

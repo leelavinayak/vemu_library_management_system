@@ -187,13 +187,19 @@ const StudentHistory = () => {
       ) : (
         <div className="table-container">
           <table>
-            <thead><tr><th>Book</th><th>Issued Date</th><th>Expected Return</th><th>Actual Return</th><th>Status</th></tr></thead>
+            <thead><tr><th>Book</th><th>Institution & Academic Info</th><th>Issued Date</th><th>Expected Return</th><th>Actual Return</th><th>Status</th></tr></thead>
             <tbody>
               {displayed.map(t => {
                 const isOverdue = t.status === 'active' && new Date() > new Date(t.expectedReturnDate);
                 return (
                   <tr key={t._id}>
                     <td><strong>{t.book?.title}</strong></td>
+                    <td>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{t.user?.collegeName || '—'}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                        {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
+                      </div>
+                    </td>
                     <td>{t.issuedDate ? new Date(t.issuedDate).toLocaleDateString() : <span style={{ color: 'var(--text-muted)' }}>Pending</span>}</td>
                     <td style={{ color: isOverdue ? 'var(--danger)' : 'inherit' }}>
                       {t.expectedReturnDate ? new Date(t.expectedReturnDate).toLocaleDateString() : '—'}

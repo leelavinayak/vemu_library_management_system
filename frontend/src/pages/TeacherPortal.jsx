@@ -182,13 +182,14 @@ const TeacherHistory = () => {
       ) : (
         <div className="table-container">
           <table>
-            <thead><tr><th>Book</th><th>Issued Date</th><th>Expected Return</th><th>Actual Return</th><th>Status</th></tr></thead>
+            <thead><tr><th>Book</th><th>College</th><th>Issued Date</th><th>Expected Return</th><th>Actual Return</th><th>Status</th></tr></thead>
             <tbody>
               {displayed.map(t => {
                 const isOverdue = t.status === 'active' && new Date() > new Date(t.expectedReturnDate);
                 return (
                   <tr key={t._id}>
                     <td><strong>{t.book?.title}</strong></td>
+                    <td style={{ fontSize: '0.85rem' }}>{t.user?.collegeName || '—'}</td>
                     <td>{new Date(t.issuedDate).toLocaleDateString()}</td>
                     <td style={{ color: isOverdue ? 'var(--danger)' : 'inherit' }}>{new Date(t.expectedReturnDate).toLocaleDateString()}</td>
                     <td>{t.returnDate ? new Date(t.returnDate).toLocaleDateString() : <span style={{ color: 'var(--text-light)' }}>—</span>}</td>

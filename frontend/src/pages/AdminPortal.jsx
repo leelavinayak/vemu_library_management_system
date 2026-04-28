@@ -160,21 +160,26 @@ const AdminHistory = () => {
 
       <div className="table-container">
         <table>
-          <thead><tr><th>User</th><th>Academic Info</th><th>Book</th><th>Issued</th><th>Status</th></tr></thead>
+          <thead><tr><th>User Details</th><th>Institution & Academic Info</th><th>Book</th><th>Issued</th><th>Returned</th><th>Status</th></tr></thead>
           <tbody>
             {displayed.map(t => {
               const isOverdue = t.status === 'active' && new Date() > new Date(t.expectedReturnDate);
               return (
                 <tr key={t._id}>
-                  <td><strong>{t.user?.name}</strong><br /><span style={{ textTransform: 'capitalize', color: 'var(--text-muted)', fontSize: '0.82rem' }}>{t.user?.role}</span></td>
                   <td>
-                    <div style={{ fontSize: '0.85rem' }}>
-                      {t.user?.year ? `${t.user.year} Year` : '—'} | {t.user?.branch || '—'}
+                    <strong>{t.user?.name}</strong><br />
+                    <span style={{ textTransform: 'capitalize', color: 'var(--text-muted)', fontSize: '0.82rem' }}>{t.user?.role}</span>
+                  </td>
+                  <td>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{t.user?.collegeName || '—'}</div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                      {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Section: {t.user?.section || '—'}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700 }}>ID: {t.user?.collegeId || '—'}</div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>
                   <td>{t.issuedDate ? new Date(t.issuedDate).toLocaleDateString() : <span style={{ color: 'var(--text-muted)' }}>Pending</span>}</td>
+                  <td>{t.returnDate ? <span style={{ color: 'var(--success)', fontWeight: 600 }}>{new Date(t.returnDate).toLocaleDateString()}</span> : <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
                   <td>
                     <span className={`status-badge ${
                       t.status === 'active' ? (isOverdue ? 'status-overdue' : 'status-active') : 
@@ -499,6 +504,10 @@ const AdminBorrowings = () => {
                   <td>
                     <div style={{ fontWeight: 600 }}>{t.user?.name}</div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t.user?.email} • <span style={{ textTransform: 'capitalize' }}>{t.user?.role}</span></div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t.user?.collegeName || '—'}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {t.user?.year ? `${t.user.year}y` : ''} {t.user?.branch} {t.user?.section ? `(${t.user.section})` : ''}
+                    </div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>
                   <td>
