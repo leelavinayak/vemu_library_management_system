@@ -72,7 +72,7 @@ app.use('/api/', limiter);
 
 // CORS Configuration
 // Body Parser
-app.use(express.json({ limit: '10mb' })); 
+app.use(express.json({ limit: '10mb' }));
 // Serve uploads from multiple potential locations for robustness
 // Static File Serving for Uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -326,29 +326,34 @@ app.get('/api/notifications', authMiddleware, asyncHandler(async (req, res) => {
 
 app.post('/api/support/message', asyncHandler(async (req, res) => {
   const { recipientRole, message, senderName, senderEmail } = req.body;
-  
-  const role = recipientRole.toLowerCase();
-  if (!['admin', 'librarian'].includes(role)) {
+  if (!['admin', 'librarian'].includes(recipientRole)) {
     return res.status(400).json({ message: 'Invalid recipient role' });
   }
+
+  const primaryUsers = await User.find({ role: recipientRole });
+  const adminUsers = recipientRole === 'admin' ? [] : await User.find({ role: 'admin' });
   
-  // Find users with the target role (case-insensitive)
-  const targetUsers = await User.find({ role });
-  
-  if (targetUsers.length === 0) {
-    return res.status(404).json({ message: `No ${role}s found to receive the message.` });
+  const allTargetUsers = [...primaryUsers];
+  adminUsers.forEach(admin => {
+    if (!allTargetUsers.find(u => u._id.toString() === admin._id.toString())) {
+      allTargetUsers.push(admin);
+    }
+  });
+
+  if (allTargetUsers.length === 0) {
+    return res.status(404).json({ message: `No staff members found to receive the message.` });
   }
-  
+
   const contactInfo = senderEmail ? ` (${senderEmail})` : '';
   const senderId = senderName ? `${senderName}${contactInfo}` : 'An anonymous user';
-  
-  const notifications = targetUsers.map(u => ({
+
+  const notifications = allTargetUsers.map(u => ({
     user: u._id,
-    message: `Help Center: Message from ${senderId} - "${message}"`
+    message: `Help Center [To: ${recipientRole}]: Message from ${senderId} - "${message}"`
   }));
-  
+
   await Notification.insertMany(notifications);
-  res.json({ message: `Your message has been sent to ${targetUsers.length} ${role}(s) successfully.` });
+  res.json({ message: `Your message has been forwarded to ${allTargetUsers.length} staff member(s).` });
 }));
 
 
@@ -377,7 +382,7 @@ if (isProd) {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
       return next();
     }
-    
+
     // Serve index.html for all other routes
     const indexPath = path.join(frontendPath, 'index.html');
     res.sendFile(indexPath, (err) => {

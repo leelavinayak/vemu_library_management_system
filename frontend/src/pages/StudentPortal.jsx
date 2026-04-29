@@ -494,8 +494,11 @@ export const Notifications = () => {
               {unread.map(n => (
                 <div key={n._id} className="notif-card unread">
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: 500, marginBottom: '0.3rem' }}>{n.message}</p>
-                    <p style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{new Date(n.createdAt).toLocaleString()}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.3rem' }}>
+                      {n.message.includes('Help Center') && <span style={{ background: 'var(--primary)', color: '#fff', fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>SUPPORT</span>}
+                      <p style={{ fontWeight: 600 }}>{n.message}</p>
+                    </div>
+                    <p className="time">{new Date(n.createdAt).toLocaleString()}</p>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     <button onClick={() => markRead(n._id)} className="secondary" style={{ padding: '6px 14px', fontSize: '0.8rem' }}>Mark Read</button>
@@ -511,8 +514,11 @@ export const Notifications = () => {
               {read.map(n => (
                 <div key={n._id} className="notif-card read">
                   <div style={{ flex: 1 }}>
-                    <p style={{ marginBottom: '0.3rem' }}>{n.message}</p>
-                    <p style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{new Date(n.createdAt).toLocaleString()}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.3rem' }}>
+                      {n.message.includes('Help Center') && <span style={{ background: '#64748b', color: '#fff', fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>SUPPORT</span>}
+                      <p>{n.message}</p>
+                    </div>
+                    <p className="time">{new Date(n.createdAt).toLocaleString()}</p>
                   </div>
                   <button onClick={() => handleDelete(n._id)} className="ghost" style={{ padding: '6px', color: 'var(--danger)' }}><Trash2 size={16} /></button>
                 </div>

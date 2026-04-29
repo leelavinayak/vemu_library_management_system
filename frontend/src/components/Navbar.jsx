@@ -1,55 +1,27 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Bell, Menu, X, LogOut, User } from 'lucide-react';
 import api from '../api/axios';
-import toast from 'react-hot-toast';
 
 const Navbar = ({ role, links }) => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const seenIds = useRef(new Set());
   const [unreadCount, setUnreadCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      if (!user) return;
       try {
         const res = await api.get('/api/notifications');
-        const notifs = res.data;
-        const unread = notifs.filter(n => !n.read);
-        setUnreadCount(unread.length);
-
-        // Show toast for new unread notifications that haven't been seen in this session
-        unread.forEach(n => {
-          if (!seenIds.current.has(n._id)) {
-            toast.success(`New Message: ${n.message.substring(0, 60)}${n.message.length > 60 ? '...' : ''}`, {
-              duration: 6000,
-              icon: '🔔',
-              style: {
-                borderRadius: '12px',
-                background: '#1e293b',
-                color: '#fff',
-                fontSize: '14px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
-              }
-            });
-            seenIds.current.add(n._id);
-          }
-        });
-
-        // Also mark existing read/unread as seen to avoid toasting old ones on login
-        notifs.forEach(n => seenIds.current.add(n._id));
+        setUnreadCount(res.data.filter(n => !n.read).length);
       } catch (err) { }
     };
-
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 5000); // Poll every 5s for snappy feedback
+    if (user) fetchNotifications();
+    const interval = setInterval(() => { if (user) fetchNotifications(); }, 30000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, location]);
 
   useEffect(() => { setIsMobileMenuOpen(false); }, [location.pathname]);
 

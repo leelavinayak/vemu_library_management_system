@@ -1088,3 +1088,51 @@ tr:hover td {
 h2 {
   font-size: 1.35rem;
 }
+
+/* ── NOTIFICATIONS ── */
+.notif-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.notif-card.unread {
+  border-left: 4px solid var(--primary);
+  background: #f0f9ff;
+}
+
+.notif-card.read {
+  opacity: 0.7;
+}
+
+.notif-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.notif-card p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.notif-card .time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}
+
+@media (max-width: 640px) {
+  .notif-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}

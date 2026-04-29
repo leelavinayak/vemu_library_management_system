@@ -28,7 +28,6 @@ const LibrarianPortal = () => {
     { path: '/librarian/books', label: 'Manage Books' },
     { path: '/librarian/history', label: 'History' },
     { path: '/librarian/fines', label: 'Fines' },
-    { path: '/librarian/notifications', label: 'Notifications' },
     { path: '/librarian/profile', label: 'Profile' },
   ];
   return (
@@ -100,7 +99,7 @@ const LibrarianHome = () => {
       const userName = t.user?.name || '';
       const bookTitle = t.book?.title || '';
       return userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-             bookTitle.toLowerCase().includes(searchTerm.toLowerCase());
+        bookTitle.toLowerCase().includes(searchTerm.toLowerCase());
     });
   };
 
@@ -113,12 +112,12 @@ const LibrarianHome = () => {
         <h2>Librarian Dashboard</h2>
         <div style={{ position: 'relative', maxWidth: '300px', width: '100%' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
-          <input 
-            type="text" 
-            placeholder="Search orders or loans..." 
-            value={searchTerm} 
-            onChange={e => setSearchTerm(e.target.value)} 
-            style={{ paddingLeft: '38px', fontSize: '0.9rem', height: '40px' }} 
+          <input
+            type="text"
+            placeholder="Search orders or loans..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ paddingLeft: '38px', fontSize: '0.9rem', height: '40px' }}
           />
         </div>
       </div>
@@ -189,8 +188,8 @@ const LibrarianHome = () => {
                   <td><strong>{t.book?.title}</strong></td>
                   <td>{new Date(t.createdAt).toLocaleDateString()}</td>
                   <td>
-                    <button 
-                      onClick={() => handleAction(t._id, 'take')} 
+                    <button
+                      onClick={() => handleAction(t._id, 'take')}
                       disabled={processingId === t._id}
                       style={{ padding: '6px 16px', fontSize: '0.82rem' }}
                     >
@@ -265,10 +264,10 @@ const LibrarianHome = () => {
                         <button disabled style={{ padding: '6px 12px', fontSize: '0.82rem', background: 'var(--success)', color: '#fff', opacity: 0.7, cursor: 'not-allowed', border: 'none' }}>
                           Taken
                         </button>
-                        <button 
-                          onClick={() => handleAction(t._id, 'return')} 
+                        <button
+                          onClick={() => handleAction(t._id, 'return')}
                           disabled={processingId === t._id}
-                          className="secondary" 
+                          className="secondary"
                           style={{ padding: '6px 16px', fontSize: '0.82rem' }}
                         >
                           {processingId === t._id ? 'Returning...' : 'Return'}
@@ -311,12 +310,12 @@ const LibrarianBooks = () => {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     if (file.size > 2 * 1024 * 1024) {
       toast.error('File size must be less than 2MB for direct upload.');
       return;
     }
-    
+
     setUploading(true);
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -525,10 +524,10 @@ const LibrarianHistory = () => {
     const userBranch = t.user?.branch || '';
     const userSection = t.user?.section || '';
 
-    const matchesSearch = 
+    const matchesSearch =
       bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
       userName.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
     const matchesYear = filterYear === 'all' || userYear === filterYear;
     const matchesBranch = filterBranch === 'all' || userBranch === filterBranch;
     const matchesSection = filterSection === 'all' || userSection === filterSection;
@@ -653,12 +652,11 @@ const LibrarianHistory = () => {
                   <td>{t.issuedDate ? new Date(t.issuedDate).toLocaleDateString() : <span style={{ color: 'var(--text-muted)' }}>Pending</span>}</td>
                   <td>{t.returnDate ? <span style={{ color: 'var(--success)', fontWeight: 600 }}>{new Date(t.returnDate).toLocaleDateString()}</span> : <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
                   <td>
-                    <span className={`status-badge ${
-                      t.status === 'active' ? (isOverdue ? 'status-overdue' : 'status-active') : 
-                      t.status === 'ordered' ? 'status-active' : 'status-completed'
-                    }`}>
-                      {t.status === 'active' ? (isOverdue ? 'Overdue' : 'Active') : 
-                       t.status === 'ordered' ? 'Ordered' : 'Returned'}
+                    <span className={`status-badge ${t.status === 'active' ? (isOverdue ? 'status-overdue' : 'status-active') :
+                        t.status === 'ordered' ? 'status-active' : 'status-completed'
+                      }`}>
+                      {t.status === 'active' ? (isOverdue ? 'Overdue' : 'Active') :
+                        t.status === 'ordered' ? 'Ordered' : 'Returned'}
                     </span>
                   </td>
                   <td>
@@ -798,8 +796,8 @@ const LibrarianBorrowings = () => {
                   </td>
                   <td>
                     {t.status === 'ordered' ? (
-                      <button 
-                        onClick={() => handleAction(t._id, 'take')} 
+                      <button
+                        onClick={() => handleAction(t._id, 'take')}
                         disabled={processingId === t._id}
                         style={{ padding: '6px 12px', fontSize: '0.8rem' }}
                       >
@@ -810,10 +808,10 @@ const LibrarianBorrowings = () => {
                         <button disabled style={{ padding: '6px 10px', fontSize: '0.75rem', background: 'var(--success)', color: '#fff', opacity: 0.7, cursor: 'not-allowed', border: 'none', borderRadius: '4px' }}>
                           Taken
                         </button>
-                        <button 
-                          onClick={() => handleAction(t._id, 'return')} 
+                        <button
+                          onClick={() => handleAction(t._id, 'return')}
                           disabled={processingId === t._id}
-                          className="secondary" 
+                          className="secondary"
                           style={{ padding: '6px 10px', fontSize: '0.8rem' }}
                         >
                           {processingId === t._id ? 'Returning...' : 'Return'}
@@ -843,7 +841,7 @@ const LibrarianFines = () => {
     const bookTitle = t.book?.title || '';
     const userName = t.user?.name || '';
     return bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           userName.toLowerCase().includes(searchTerm.toLowerCase());
+      userName.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   const total = fines.reduce((a, t) => a + t.fineAmount, 0);

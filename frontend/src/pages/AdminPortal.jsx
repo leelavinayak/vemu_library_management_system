@@ -29,7 +29,6 @@ const AdminPortal = () => {
     { path: '/admin/history', label: 'History' },
     { path: '/admin/fines', label: 'Fines' },
     { path: '/admin/users', label: 'Users' },
-    { path: '/admin/notifications', label: 'Notifications' },
     { path: '/admin/profile', label: 'Profile' },
   ];
   return (
@@ -146,10 +145,10 @@ const AdminHistory = () => {
     const userBranch = t.user?.branch || '';
     const userSection = t.user?.section || '';
 
-    const matchesSearch = 
+    const matchesSearch =
       bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
       userName.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
     const matchesYear = filterYear === 'all' || userYear === filterYear;
     const matchesBranch = filterBranch === 'all' || userBranch === filterBranch;
     const matchesSection = filterSection === 'all' || userSection === filterSection;
@@ -277,12 +276,11 @@ const AdminHistory = () => {
                   <td>{t.issuedDate ? new Date(t.issuedDate).toLocaleDateString() : <span style={{ color: 'var(--text-muted)' }}>Pending</span>}</td>
                   <td>{t.returnDate ? <span style={{ color: 'var(--success)', fontWeight: 600 }}>{new Date(t.returnDate).toLocaleDateString()}</span> : <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
                   <td>
-                    <span className={`status-badge ${
-                      t.status === 'active' ? (isOverdue ? 'status-overdue' : 'status-active') : 
-                      t.status === 'ordered' ? 'status-active' : 'status-completed'
-                    }`}>
-                      {t.status === 'active' ? (isOverdue ? 'Overdue' : 'Active') : 
-                       t.status === 'ordered' ? 'Ordered' : 'Returned'}
+                    <span className={`status-badge ${t.status === 'active' ? (isOverdue ? 'status-overdue' : 'status-active') :
+                        t.status === 'ordered' ? 'status-active' : 'status-completed'
+                      }`}>
+                      {t.status === 'active' ? (isOverdue ? 'Overdue' : 'Active') :
+                        t.status === 'ordered' ? 'Ordered' : 'Returned'}
                     </span>
                   </td>
                 </tr>
@@ -307,7 +305,7 @@ const AdminFines = () => {
     const bookTitle = t.book?.title || '';
     const userName = t.user?.name || '';
     return bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           userName.toLowerCase().includes(searchTerm.toLowerCase());
+      userName.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   const total = fines.reduce((a, t) => a + t.fineAmount, 0);
@@ -366,7 +364,7 @@ const AdminUsers = () => {
   const executeDelete = async () => {
     try {
       await api.delete(`/api/users/${modalConfig.id}`);
-      toast.success('User deleted'); 
+      toast.success('User deleted');
       fetchUsers();
     } catch (err) { toast.error('Error deleting user'); }
   };
@@ -433,7 +431,7 @@ const AdminUsers = () => {
         </table>
       </div>
 
-      <ConfirmModal 
+      <ConfirmModal
         isOpen={modalConfig.isOpen}
         onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
         onConfirm={executeDelete}
@@ -571,7 +569,7 @@ const AdminBorrowings = () => {
   const filtered = borrowings.filter(t => {
     const bookTitle = t.book?.title || '';
     const userName = t.user?.name || '';
-    const matchesSearch = 
+    const matchesSearch =
       bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
       userName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filter === 'all' || t.status === filter;
