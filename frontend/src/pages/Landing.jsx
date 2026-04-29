@@ -29,7 +29,9 @@ const Landing = () => {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--primary-light)', border: '1px solid var(--primary)', borderRadius: '99px', padding: '8px 22px', marginBottom: '1.5rem', color: 'var(--primary-dark)', fontSize: '0.9rem', fontWeight: 700 }}>
             <Zap size={15} /> VEMU Institute of Technology
           </div>
-          <h1>VEMU Library<br /><span style={{ color: 'var(--primary)' }}>Management System</span></h1>
+          <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 900, lineHeight: 1.2, marginBottom: '1.5rem', letterSpacing: '-0.04em', color: '#000' }}>
+            VEMU Library <span style={{ color: 'var(--primary)', whiteSpace: 'nowrap' }}>Management System</span>
+          </h1>
           <p>A professional digital platform for managing books, users, fines, and notifications. Experience seamless library administration today.</p>
           <div className="hero-buttons">
             <Link to="/login"><button className="btn-primary">Get Started →</button></Link>

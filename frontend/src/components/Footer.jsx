@@ -72,7 +72,7 @@ const Footer = () => {
               { Icon: InstagramIcon, url: 'https://www.instagram.com/vemuit/', label: 'Instagram' },
               { Icon: LinkedinIcon, url: 'https://www.linkedin.com/school/vemu-it/', label: 'LinkedIn' },
               // { Icon: GithubIcon, url: '#', label: 'Github' },
-              { Icon: MessageSquare, url: '#', label: 'Support' }
+              // { Icon: MessageSquare, url: '#', label: 'Support' }
             ].map((item, idx) => (
               <a key={idx} href={item.url} target="_blank" rel="noopener noreferrer" title={item.label}
                  style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '12px', color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
