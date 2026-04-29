@@ -6,7 +6,8 @@ import api, { BASE_URL } from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 import { Notifications } from './StudentPortal';
 import toast from 'react-hot-toast';
-import { BookOpen, Edit2, Trash2, Plus, Save, X, CheckCircle, Clock, AlertTriangle, Search } from 'lucide-react';
+import { BookOpen, Edit2, Trash2, Plus, Save, X, CheckCircle, Clock, AlertTriangle, Search, Download } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 const getBookImage = (img) => {
   if (!img) return 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
@@ -171,7 +172,13 @@ const LibrarianHome = () => {
                   </td>
                   <td>
                     <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                          <BookOpen size={20} color="var(--primary)" />
+                        </div>
+                      ) : (
+                        <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      )}
                     </div>
                   </td>
                   <td><strong>{t.book?.title}</strong></td>
@@ -234,7 +241,13 @@ const LibrarianHome = () => {
                     </td>
                     <td>
                       <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                        <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                            <BookOpen size={20} color="var(--primary)" />
+                          </div>
+                        ) : (
+                          <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        )}
                       </div>
                     </td>
                     <td><strong>{t.book?.title}</strong></td>
@@ -473,6 +486,9 @@ const LibrarianHistory = () => {
   const [history, setHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [limit, setLimit] = useState(10);
+  const [filterYear, setFilterYear] = useState('all');
+  const [filterBranch, setFilterBranch] = useState('all');
+  const [filterSection, setFilterSection] = useState('all');
 
   useEffect(() => { fetchHistory(); }, []);
   const fetchHistory = async () => {
@@ -491,9 +507,41 @@ const LibrarianHistory = () => {
   const filtered = history.filter(t => {
     const bookTitle = t.book?.title || '';
     const userName = t.user?.name || '';
-    return bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           userName.toLowerCase().includes(searchTerm.toLowerCase());
+    const userYear = t.user?.year?.toString() || '';
+    const userBranch = t.user?.branch || '';
+    const userSection = t.user?.section || '';
+
+    const matchesSearch = 
+      bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      userName.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchesYear = filterYear === 'all' || userYear === filterYear;
+    const matchesBranch = filterBranch === 'all' || userBranch === filterBranch;
+    const matchesSection = filterSection === 'all' || userSection === filterSection;
+
+    return matchesSearch && matchesYear && matchesBranch && matchesSection;
   });
+
+  const handleExport = () => {
+    const exportData = filtered.map(t => ({
+      'Transaction ID': t._id,
+      'User Name': t.user?.name || '',
+      'College ID': t.user?.collegeId || '',
+      'College Name': t.user?.collegeName || '',
+      'Year': t.user?.year || '',
+      'Branch': t.user?.branch || '',
+      'Section': t.user?.section || '',
+      'Book Title': t.book?.title || '',
+      'Status': t.status === 'ordered' ? 'ORDERED' : (t.status === 'active' ? 'TAKEN' : t.status),
+      'Order/Issued Date': t.status === 'ordered' ? new Date(t.createdAt).toLocaleDateString() : (t.issuedDate ? new Date(t.issuedDate).toLocaleDateString() : ''),
+      'Expected Return Date': t.status === 'active' && t.expectedReturnDate ? new Date(t.expectedReturnDate).toLocaleDateString() : '',
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'History_Details');
+    XLSX.writeFile(workbook, `History_Details_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
 
   const displayed = limit === 'all' ? filtered : filtered.slice(0, limit);
 
@@ -516,17 +564,50 @@ const LibrarianHistory = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <div style={{ position: 'relative', maxWidth: '400px' }}>
+      {/* Filters and Search Bar */}
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        <div style={{ position: 'relative', maxWidth: '400px', flex: 1 }}>
           <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
           <input type="text" placeholder="Search by book or user name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ paddingLeft: '42px' }} />
         </div>
+        <select value={filterYear} onChange={e => setFilterYear(e.target.value)} style={{ maxWidth: '120px', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+          <option value="all">All Years</option>
+          <option value="1">1st Year</option>
+          <option value="2">2nd Year</option>
+          <option value="3">3rd Year</option>
+          <option value="4">4th Year</option>
+        </select>
+        <select value={filterBranch} onChange={e => setFilterBranch(e.target.value)} style={{ maxWidth: '150px', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+          <option value="all">All Branches</option>
+          <option value="CSE">CSE</option>
+          <option value="ECE">ECE</option>
+          <option value="EEE">EEE</option>
+          <option value="Civil">Civil</option>
+          <option value="Mech">Mech</option>
+          <option value="AIML">AIML</option>
+          <option value="AI">AI</option>
+          <option value="IT">IT</option>
+          <option value="Diploma">Diploma</option>
+          <option value="MCA">MCA</option>
+          <option value="MBA">MBA</option>
+        </select>
+        <select value={filterSection} onChange={e => setFilterSection(e.target.value)} style={{ maxWidth: '120px', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+          <option value="all">All Sections</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+          <option value="E">E</option>
+          <option value="F">F</option>
+        </select>
+        <button onClick={handleExport} className="secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '8px' }}>
+          <Download size={16} /> Export
+        </button>
       </div>
 
       <div className="table-container">
         <table>
-          <thead><tr><th>User Details</th><th>Institution & Academic Info</th><th>Book Preview</th><th>Book</th><th>Issued</th><th>Returned</th><th>Status</th></tr></thead>
+          <thead><tr><th>User Details</th><th>Institution & Academic Info</th><th>Book Preview</th><th>Book</th><th>Issued</th><th>Returned</th><th>Status</th><th>Action</th></tr></thead>
           <tbody>
             {displayed.map(t => {
               const isOverdue = t.status === 'active' && new Date() > new Date(t.expectedReturnDate);
@@ -545,7 +626,13 @@ const LibrarianHistory = () => {
                   </td>
                   <td>
                     <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                          <BookOpen size={20} color="var(--primary)" />
+                        </div>
+                      ) : (
+                        <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      )}
                     </div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>
@@ -671,7 +758,13 @@ const LibrarianBorrowings = () => {
                   </td>
                   <td>
                     <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                          <BookOpen size={20} color="var(--primary)" />
+                        </div>
+                      ) : (
+                        <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      )}
                     </div>
                   </td>
                   <td style={{ fontWeight: 500 }}>{t.book?.title}</td>

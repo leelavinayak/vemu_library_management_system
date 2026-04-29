@@ -193,7 +193,13 @@ const TeacherHistory = () => {
                     <td><strong>{t.book?.title}</strong></td>
                     <td>
                       <div style={{ width: '45px', height: '60px', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                        <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                            <BookOpen size={20} color="var(--primary)" />
+                          </div>
+                        ) : (
+                          <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        )}
                       </div>
                     </td>
                     <td style={{ fontSize: '0.85rem' }}>{t.user?.collegeName || '—'}</td>
