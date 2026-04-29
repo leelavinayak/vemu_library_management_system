@@ -393,7 +393,10 @@ if (isProd) {
 }
 
 // --- CATCH-ALL: Serve React app for any non-API route ---
-app.get('*', (req, res) => {
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
+    return next();
+  }
   const indexPath = path.join(__dirname, '..', 'frontend', 'dist', 'index.html');
   res.sendFile(indexPath, (err) => {
     if (err) {
