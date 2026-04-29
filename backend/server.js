@@ -326,14 +326,17 @@ app.get('/api/notifications', authMiddleware, asyncHandler(async (req, res) => {
 
 app.post('/api/support/message', asyncHandler(async (req, res) => {
   const { recipientRole, message, senderName, senderEmail } = req.body;
-  if (!['admin', 'librarian'].includes(recipientRole)) {
+  
+  const role = recipientRole.toLowerCase();
+  if (!['admin', 'librarian'].includes(role)) {
     return res.status(400).json({ message: 'Invalid recipient role' });
   }
   
-  const targetUsers = await User.find({ role: recipientRole });
+  // Find users with the target role (case-insensitive)
+  const targetUsers = await User.find({ role });
   
   if (targetUsers.length === 0) {
-    return res.status(404).json({ message: `No ${recipientRole}s found to receive the message.` });
+    return res.status(404).json({ message: `No ${role}s found to receive the message.` });
   }
   
   const contactInfo = senderEmail ? ` (${senderEmail})` : '';
@@ -345,7 +348,7 @@ app.post('/api/support/message', asyncHandler(async (req, res) => {
   }));
   
   await Notification.insertMany(notifications);
-  res.json({ message: 'Your message has been sent to the ' + recipientRole + ' successfully.' });
+  res.json({ message: `Your message has been sent to ${targetUsers.length} ${role}(s) successfully.` });
 }));
 
 

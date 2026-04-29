@@ -28,6 +28,7 @@ const LibrarianPortal = () => {
     { path: '/librarian/books', label: 'Manage Books' },
     { path: '/librarian/history', label: 'History' },
     { path: '/librarian/fines', label: 'Fines' },
+    { path: '/librarian/notifications', label: 'Notifications' },
     { path: '/librarian/profile', label: 'Profile' },
   ];
   return (

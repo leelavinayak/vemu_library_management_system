@@ -29,6 +29,7 @@ const AdminPortal = () => {
     { path: '/admin/history', label: 'History' },
     { path: '/admin/fines', label: 'Fines' },
     { path: '/admin/users', label: 'Users' },
+    { path: '/admin/notifications', label: 'Notifications' },
     { path: '/admin/profile', label: 'Profile' },
   ];
   return (
