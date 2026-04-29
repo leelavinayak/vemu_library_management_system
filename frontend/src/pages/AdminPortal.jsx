@@ -261,7 +261,7 @@ const AdminHistory = () => {
                   </td>
                   <td>
                     <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                      {t.book?.imageUrl && (t.book.imageUrl.endsWith('.pdf') || t.book.imageUrl.includes('application/pdf')) ? (
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
                           <BookOpen size={20} color="var(--primary)" />
                         </div>
@@ -626,7 +626,7 @@ const AdminBorrowings = () => {
                   </td>
                   <td>
                     <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                      {t.book?.imageUrl && (t.book.imageUrl.endsWith('.pdf') || t.book.imageUrl.includes('application/pdf')) ? (
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
                           <BookOpen size={20} color="var(--primary)" />
                         </div>

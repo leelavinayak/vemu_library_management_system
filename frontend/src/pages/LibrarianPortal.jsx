@@ -172,7 +172,7 @@ const LibrarianHome = () => {
                   </td>
                   <td>
                     <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                      {t.book?.imageUrl && (t.book.imageUrl.endsWith('.pdf') || t.book.imageUrl.includes('application/pdf')) ? (
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
                           <BookOpen size={20} color="var(--primary)" />
                         </div>
@@ -241,7 +241,7 @@ const LibrarianHome = () => {
                     </td>
                     <td>
                       <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                        {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                        {t.book?.imageUrl && (t.book.imageUrl.endsWith('.pdf') || t.book.imageUrl.includes('application/pdf')) ? (
                           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
                             <BookOpen size={20} color="var(--primary)" />
                           </div>
@@ -306,15 +306,24 @@ const LibrarianBooks = () => {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const data = new FormData();
-    data.append('file', file);
-    try {
-      setUploading(true);
-      const res = await api.post('/api/upload', data, { headers: { 'Content-Type': 'multipart/form-data' } });
-      setFormData(f => ({ ...f, imageUrl: res.data.filePath }));
-      toast.success('File uploaded!');
-    } catch (err) { toast.error('Upload failed'); }
-    finally { setUploading(false); }
+    
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('File size must be less than 2MB for direct upload.');
+      return;
+    }
+    
+    setUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(f => ({ ...f, imageUrl: reader.result }));
+      setUploading(false);
+      toast.success('File loaded successfully!');
+    };
+    reader.onerror = () => {
+      setUploading(false);
+      toast.error('Error reading file');
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -418,7 +427,7 @@ const LibrarianBooks = () => {
                   justifyContent: 'center', overflow: 'hidden', flexShrink: 0
                 }}>
                   {formData.imageUrl && !uploading ? (
-                    formData.imageUrl.endsWith('.pdf') ? (
+                    (formData.imageUrl.endsWith('.pdf') || formData.imageUrl.includes('application/pdf')) ? (
                       <BookOpen size={30} color="var(--primary)" />
                     ) : (
                       <img src={getBookImage(formData.imageUrl)} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -441,7 +450,7 @@ const LibrarianBooks = () => {
         {filtered.map(book => (
           <div key={book._id} className="book-card">
             <div className="book-card-img-wrap">
-              {book.imageUrl && book.imageUrl.endsWith('.pdf') ? (
+              {book.imageUrl && (book.imageUrl.endsWith('.pdf') || book.imageUrl.includes('application/pdf')) ? (
                 <div className="pdf-placeholder">
                   <BookOpen size={48} color="var(--primary)" style={{ opacity: 0.35 }} />
                   <a href={getBookImage(book.imageUrl)} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
@@ -626,7 +635,7 @@ const LibrarianHistory = () => {
                   </td>
                   <td>
                     <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                      {t.book?.imageUrl && (t.book.imageUrl.endsWith('.pdf') || t.book.imageUrl.includes('application/pdf')) ? (
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
                           <BookOpen size={20} color="var(--primary)" />
                         </div>
@@ -758,7 +767,7 @@ const LibrarianBorrowings = () => {
                   </td>
                   <td>
                     <div style={{ width: '40px', height: '55px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      {t.book?.imageUrl && t.book.imageUrl.endsWith('.pdf') ? (
+                      {t.book?.imageUrl && (t.book.imageUrl.endsWith('.pdf') || t.book.imageUrl.includes('application/pdf')) ? (
                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
                           <BookOpen size={20} color="var(--primary)" />
                         </div>
