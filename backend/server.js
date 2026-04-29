@@ -65,7 +65,7 @@ if (process.env.NODE_ENV === 'development') {
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 1000, // Increased limit from 100 to 1000 to prevent 'Too many requests' error during normal usage
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
 app.use('/api/', limiter);
@@ -323,6 +323,31 @@ app.get('/api/notifications', authMiddleware, asyncHandler(async (req, res) => {
   const notifications = await Notification.find({ user: req.user.id }).sort({ createdAt: -1 });
   res.json(notifications);
 }));
+
+app.post('/api/support/message', asyncHandler(async (req, res) => {
+  const { recipientRole, message, senderName, senderEmail } = req.body;
+  if (!['admin', 'librarian'].includes(recipientRole)) {
+    return res.status(400).json({ message: 'Invalid recipient role' });
+  }
+  
+  const targetUsers = await User.find({ role: recipientRole });
+  
+  if (targetUsers.length === 0) {
+    return res.status(404).json({ message: `No ${recipientRole}s found to receive the message.` });
+  }
+  
+  const contactInfo = senderEmail ? ` (${senderEmail})` : '';
+  const senderId = senderName ? `${senderName}${contactInfo}` : 'An anonymous user';
+  
+  const notifications = targetUsers.map(u => ({
+    user: u._id,
+    message: `Help Center: Message from ${senderId} - "${message}"`
+  }));
+  
+  await Notification.insertMany(notifications);
+  res.json({ message: 'Your message has been sent to the ' + recipientRole + ' successfully.' });
+}));
+
 
 app.put('/api/notifications/:id/read', authMiddleware, asyncHandler(async (req, res) => {
   const notif = await Notification.findByIdAndUpdate(req.params.id, { read: true }, { new: true });

@@ -8,6 +8,7 @@ import LibrarianPortal from './pages/LibrarianPortal';
 import Landing from './pages/Landing';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
+import Footer from './components/Footer';
 
 const PrivateRoute = ({ children, role }) => {
   const { user, loading } = useContext(AuthContext);
@@ -34,33 +35,38 @@ const App = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Toaster 
-          position="top-right" 
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: '#000000',
-              color: '#ffffff',
-              borderRadius: '10px',
-              fontSize: '0.9rem',
-              fontWeight: 500,
-              padding: '12px 20px',
-            },
-            success: {
-              iconTheme: {
-                primary: '#0ea5e9',
-                secondary: '#fff',
-              },
-            },
-            error: {
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
               style: {
                 background: '#000000',
                 color: '#ffffff',
+                borderRadius: '10px',
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                padding: '12px 20px',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#0ea5e9',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                style: {
+                  background: '#000000',
+                  color: '#ffffff',
+                }
               }
-            }
-          }}
-        />
-        <AppRoutes />
+            }}
+          />
+          <div style={{ flex: 1 }}>
+            <AppRoutes />
+          </div>
+          <Footer />
+        </div>
       </BrowserRouter>
     </AuthProvider>
   );

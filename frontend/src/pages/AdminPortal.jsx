@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ConfirmModal from '../components/ConfirmModal';
-import api from '../api/axios';
+import api, { BASE_URL } from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 import { Notifications } from './StudentPortal';
 import toast from 'react-hot-toast';
@@ -132,10 +132,12 @@ const AdminHistory = () => {
     api.get('/api/transactions').then(res => setHistory(res.data));
   }, []);
 
-  const filtered = history.filter(t =>
-    t.book?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.user?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = history.filter(t => {
+    const bookTitle = t.book?.title || '';
+    const userName = t.user?.name || '';
+    return bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           userName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const displayed = limit === 'all' ? filtered : filtered.slice(0, limit);
 
@@ -220,10 +222,12 @@ const AdminFines = () => {
     api.get('/api/transactions').then(res => setFines(res.data.filter(t => t.fineAmount > 0)));
   }, []);
 
-  const filtered = fines.filter(t =>
-    t.book?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.user?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = fines.filter(t => {
+    const bookTitle = t.book?.title || '';
+    const userName = t.user?.name || '';
+    return bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           userName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const total = fines.reduce((a, t) => a + t.fineAmount, 0);
 
@@ -264,6 +268,7 @@ const AdminFines = () => {
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [limit, setLimit] = useState(10);
   const [modalConfig, setModalConfig] = useState({ isOpen: false, id: null });
   const navigate = useNavigate();
 
@@ -286,11 +291,27 @@ const AdminUsers = () => {
   };
 
   const filtered = users.filter(u => u.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const displayed = limit === 'all' ? filtered : filtered.slice(0, limit);
 
   return (
     <div>
       <div className="section-header">
-        <h2>User Management</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <h2 style={{ margin: 0 }}>User Management</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Show:</span>
+            <select
+              value={limit}
+              onChange={e => setLimit(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+              style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '0.85rem', outline: 'none' }}
+            >
+              <option value={10}>10</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+        </div>
         <Link to="/admin/users/add" className="button-link" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--primary)', color: '#fff', padding: '10px 20px', borderRadius: '12px', fontWeight: 600, textDecoration: 'none' }}>
           <Plus size={18} /> Add User
         </Link>
@@ -307,7 +328,7 @@ const AdminUsers = () => {
         <table>
           <thead><tr><th>Name / ID</th><th>Email / Mobile</th><th>Role</th><th>College</th><th>Actions</th></tr></thead>
           <tbody>
-            {filtered.map(u => (
+            {displayed.map(u => (
               <tr key={u._id}>
                 <td>
                   <strong>{u.name}</strong><br />
@@ -467,9 +488,11 @@ const AdminBorrowings = () => {
   };
 
   const filtered = borrowings.filter(t => {
+    const bookTitle = t.book?.title || '';
+    const userName = t.user?.name || '';
     const matchesSearch = 
-      t.book?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.user?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      userName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filter === 'all' || t.status === filter;
     return matchesSearch && matchesFilter;
   });

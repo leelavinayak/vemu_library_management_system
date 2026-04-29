@@ -90,10 +90,12 @@ const LibrarianHome = () => {
   };
 
   const filterData = (list) => {
-    return list.filter(t => 
-      t.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.book?.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    return list.filter(t => {
+      const userName = t.user?.name || '';
+      const bookTitle = t.book?.title || '';
+      return userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             bookTitle.toLowerCase().includes(searchTerm.toLowerCase());
+    });
   };
 
   const filteredPending = filterData(pendingOrders);
@@ -486,10 +488,12 @@ const LibrarianHistory = () => {
     } catch (err) { toast.error('Error returning book'); }
   };
 
-  const filtered = history.filter(t =>
-    t.book?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.user?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = history.filter(t => {
+    const bookTitle = t.book?.title || '';
+    const userName = t.user?.name || '';
+    return bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           userName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const displayed = limit === 'all' ? filtered : filtered.slice(0, limit);
 
@@ -607,9 +611,11 @@ const LibrarianBorrowings = () => {
   };
 
   const filtered = borrowings.filter(t => {
+    const bookTitle = t.book?.title || '';
+    const userName = t.user?.name || '';
     const matchesSearch =
-      t.book?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.user?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      userName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filter === 'all' || t.status === filter;
     return matchesSearch && matchesFilter;
   });
@@ -726,10 +732,12 @@ const LibrarianFines = () => {
     api.get('/api/transactions').then(res => setFines(res.data.filter(t => t.fineAmount > 0)));
   }, []);
 
-  const filtered = fines.filter(t =>
-    t.book?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.user?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = fines.filter(t => {
+    const bookTitle = t.book?.title || '';
+    const userName = t.user?.name || '';
+    return bookTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           userName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const total = fines.reduce((a, t) => a + t.fineAmount, 0);
 

@@ -71,17 +71,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{ background: 'var(--accent)', padding: '5rem 2rem', textAlign: 'center' }}>
-        <h2 style={{ color: '#fff', fontSize: 'clamp(1.8rem,3vw,2.25rem)', marginBottom: '1.25rem' }}>Ready to get started?</h2>
-        <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2.5rem', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 2.5rem' }}>Login to your portal and experience the VEMU Library Management System.</p>
-        <Link to="/login"><button style={{ background: 'var(--primary)', color: '#fff', padding: '16px 45px', fontSize: '1rem', fontWeight: 700, borderRadius: '99px' }}>Login Now →</button></Link>
-      </section>
-
-      {/* FOOTER */}
-      <footer style={{ background: '#000000', padding: '2.5rem 2rem', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-        © {new Date().getFullYear()} VEMU Library Management System · VEMU Institute of Technology & Sciences
-      </footer>
     </div>
   );
 };

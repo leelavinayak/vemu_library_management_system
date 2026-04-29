@@ -149,9 +149,10 @@ const StudentHistory = () => {
     api.get('/api/transactions').then(res => setHistory(res.data));
   }, []);
 
-  const filtered = history.filter(t =>
-    t.book?.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = history.filter(t => {
+    const bookTitle = t.book?.title || '';
+    return bookTitle.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const displayed = limit === 'all' ? filtered : filtered.slice(0, limit);
 
@@ -233,9 +234,10 @@ const StudentFines = () => {
     api.get('/api/transactions').then(res => setHistory(res.data.filter(t => t.fineAmount > 0)));
   }, []);
 
-  const filtered = history.filter(t =>
-    t.book?.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = history.filter(t => {
+    const bookTitle = t.book?.title || '';
+    return bookTitle.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const totalFine = history.reduce((acc, t) => acc + t.fineAmount, 0);
 
