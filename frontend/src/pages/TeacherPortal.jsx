@@ -7,12 +7,12 @@ import { Notifications } from './StudentPortal';
 import toast from 'react-hot-toast';
 import { BookOpen, Bell, Clock, Edit2, Save, X, Search } from 'lucide-react';
 
-const DEFAULT_BOOK_IMAGE = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
 
 const getBookImage = (img) => {
-  if (!img) return 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
-  if (img.startsWith('http') || img.startsWith('data:')) return img;
-  const cleanBase = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  if (!img || img.trim() === '') return FALLBACK_IMG;
+  if (img.startsWith('data:') || img.startsWith('http://') || img.startsWith('https://')) return img;
+  const cleanBase = (import.meta.env.VITE_API_URL || 'https://vemu-library-management-system-ni7c.onrender.com').replace(/\/$/, '');
   const cleanImg = img.startsWith('/') ? img : `/${img}`;
   return `${cleanBase}${cleanImg}`;
 };

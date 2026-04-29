@@ -12,10 +12,12 @@ import * as XLSX from 'xlsx';
 import AddUser from './AddUser';
 import EditUser from './EditUser';
 
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
+
 const getBookImage = (img) => {
-  if (!img) return 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
-  if (img.startsWith('http') || img.startsWith('data:')) return img;
-  const cleanBase = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  if (!img || img.trim() === '') return FALLBACK_IMG;
+  if (img.startsWith('data:') || img.startsWith('http://') || img.startsWith('https://')) return img;
+  const cleanBase = (import.meta.env.VITE_API_URL || 'https://vemu-library-management-system-ni7c.onrender.com').replace(/\/$/, '');
   const cleanImg = img.startsWith('/') ? img : `/${img}`;
   return `${cleanBase}${cleanImg}`;
 };
