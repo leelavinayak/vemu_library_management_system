@@ -83,6 +83,10 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/uploads', express.static('/tmp'));
 }
 
+// --- SERVE FRONTEND IN PRODUCTION ---
+const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(frontendDist));
+
 // --- MULTER CONFIGURATION ---
 // Note: Local storage will not work on Vercel's ephemeral filesystem.
 // For true production, consider Cloudinary or AWS S3.
@@ -387,6 +391,16 @@ if (isProd) {
     console.error('❌ CRITICAL: Frontend dist folder NOT found in any location:', paths);
   }
 }
+
+// --- CATCH-ALL: Serve React app for any non-API route ---
+app.get('*', (req, res) => {
+  const indexPath = path.join(__dirname, '..', 'frontend', 'dist', 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      res.status(200).send('<html><body><script>window.location.href="/";</script></body></html>');
+    }
+  });
+});
 
 // --- GLOBAL ERROR HANDLER ---
 app.use((err, req, res, next) => {
