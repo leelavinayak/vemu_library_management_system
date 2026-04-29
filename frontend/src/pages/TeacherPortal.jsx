@@ -11,7 +11,7 @@ const DEFAULT_BOOK_IMAGE = 'https://images.unsplash.com/photo-1544947950-fa07a98
 
 const getBookImage = (img) => {
   if (!img) return 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop';
-  if (img.startsWith('http')) return img;
+  if (img.startsWith('http') || img.startsWith('data:')) return img;
   const cleanBase = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
   const cleanImg = img.startsWith('/') ? img : `/${img}`;
   return `${cleanBase}${cleanImg}`;
@@ -101,7 +101,7 @@ const TeacherHome = () => {
                     <a href={getBookImage(book.imageUrl)} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
                   </div>
                 ) : (
-                  <img src={getBookImage(book.imageUrl)} alt={book.title} />
+                  <img src={getBookImage(t.book?.imageUrl)} alt="" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 )}
               </div>
               <div className="info">
@@ -198,7 +198,7 @@ const TeacherHistory = () => {
                             <BookOpen size={20} color="var(--primary)" />
                           </div>
                         ) : (
-                          <img src={getBookImage(t.book?.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={getBookImage(t.book?.imageUrl)} alt="" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         )}
                       </div>
                     </td>
