@@ -434,7 +434,7 @@ const LibrarianBooks = () => {
                     (formData.imageUrl.endsWith('.pdf') || formData.imageUrl.includes('application/pdf')) ? (
                       <BookOpen size={30} color="var(--primary)" />
                     ) : (
-                      <img src={getBookImage(t.book?.imageUrl)} alt="" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <img src={getBookImage(formData.imageUrl)} alt="Preview" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     )
                   ) : (
                     <BookOpen size={30} color="var(--text-light)" />
@@ -460,7 +460,7 @@ const LibrarianBooks = () => {
                   <a href={getBookImage(book.imageUrl)} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: 600 }}>View PDF</a>
                 </div>
               ) : (
-                <img src={getBookImage(t.book?.imageUrl)} alt="" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={getBookImage(book.imageUrl)} alt={book.title} onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               )}
             </div>
             <div className="info">

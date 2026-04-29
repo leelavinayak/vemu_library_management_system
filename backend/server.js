@@ -83,10 +83,6 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/uploads', express.static('/tmp'));
 }
 
-// --- SERVE FRONTEND IN PRODUCTION ---
-const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
-app.use(express.static(frontendDist));
-
 // --- MULTER CONFIGURATION ---
 // Note: Local storage will not work on Vercel's ephemeral filesystem.
 // For true production, consider Cloudinary or AWS S3.
@@ -364,46 +360,35 @@ app.delete('/api/notifications/all', authMiddleware, asyncHandler(async (req, re
   res.json({ message: 'All notifications cleared' });
 }));
 
-// --- SERVE FRONTEND ---
+// --- SERVE FRONTEND (SPA) ---
 const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+const frontendPath = path.resolve(__dirname, '..', 'frontend', 'dist');
 
 if (isProd) {
-  const fs = require('fs');
-  // Try multiple possible paths to find the built frontend
-  const paths = [
-    path.resolve(process.cwd(), 'frontend', 'dist'),
-    path.resolve(__dirname, '../frontend/dist'),
-    path.resolve(__dirname, '..', 'frontend', 'dist')
-  ];
+  // Static files
+  app.use(express.static(frontendPath));
 
-  let frontendPath = paths.find(p => fs.existsSync(p));
-
-  if (frontendPath) {
-    console.log('✅ Frontend found at:', frontendPath);
-    app.use(express.static(frontendPath));
-    
-    // Catch-all for React Routing
-    app.use((req, res, next) => {
-      if (req.path.startsWith('/api')) return next();
-      res.sendFile(path.join(frontendPath, 'index.html'));
-    });
-  } else {
-    console.error('❌ CRITICAL: Frontend dist folder NOT found in any location:', paths);
-  }
-}
-
-// --- CATCH-ALL: Serve React app for any non-API route ---
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
-    return next();
-  }
-  const indexPath = path.join(__dirname, '..', 'frontend', 'dist', 'index.html');
-  res.sendFile(indexPath, (err) => {
-    if (err) {
-      res.status(200).send('<html><body><script>window.location.href="/";</script></body></html>');
+  // Catch-all for SPA
+  app.use((req, res, next) => {
+    // Skip API and uploads
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
     }
+    
+    // Serve index.html for all other routes
+    const indexPath = path.join(frontendPath, 'index.html');
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        console.error('Error sending index.html:', err);
+        // Minimal fallback if index.html is missing
+        res.status(200).send('<html><body><div id="root">Loading...</div><script>if(window.location.pathname!=="/")window.location.href="/";</script></body></html>');
+      }
+    });
   });
-});
+} else {
+  // Development fallback for API routes that don't match
+  app.use('/api', (req, res) => res.status(404).json({ message: 'API Route Not Found' }));
+}
 
 // --- GLOBAL ERROR HANDLER ---
 app.use((err, req, res, next) => {
