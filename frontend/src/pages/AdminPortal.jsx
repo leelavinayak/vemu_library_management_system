@@ -268,7 +268,7 @@ const AdminHistory = () => {
                           <BookOpen size={20} color="var(--primary)" />
                         </div>
                       ) : (
-                        <img src={getBookImage(t.book?.imageUrl)} alt="" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={getBookImage(t.book?.imageUrl)} alt="" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "contain", backgroundColor: "#f8fafc" }} />
                       )}
                     </div>
                   </td>
@@ -633,7 +633,7 @@ const AdminBorrowings = () => {
                           <BookOpen size={20} color="var(--primary)" />
                         </div>
                       ) : (
-                        <img src={getBookImage(t.book?.imageUrl)} alt="" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={getBookImage(t.book?.imageUrl)} alt="" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"; }} style={{ width: "100%", height: "100%", objectFit: "contain", backgroundColor: "#f8fafc" }} />
                       )}
                     </div>
                   </td>
